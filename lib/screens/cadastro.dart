@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'auth_scaffold.dart';
+import '../auth_scaffold.dart';
 import 'login.dart';
 import 'splash_screen.dart';
 

@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-import 'cadastro.dart';
-import 'login.dart';
-import 'splash_screen.dart';
 
-void main() {
-  runApp(const SistemaAgendamentoApp());
+import 'screens/cadastro.dart';
+import 'screens/login.dart';
+import 'screens/splash_screen.dart';
+
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions  (
+        apiKey: "AIzaSyBDSI3im2DYrV8yGOtv6Y7VXQdWqtosGUE",
+        authDomain: "dentagenda-76586.firebaseapp.com",
+        projectId: "dentagenda-76586",
+        storageBucket: "dentagenda-76586.firebasestorage.app",
+        messagingSenderId: "663660709789",
+        appId: "1:663660709789:web:c5ebe55a1d73687551d174"
+      )
+    );
+    
+  } catch (_) {
+    // Firebase can be configured later with FlutterFire for each platform.
+  }
+  runApp(const MyApp());
 }
 
-class SistemaAgendamentoApp extends StatelessWidget {
-  const SistemaAgendamentoApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
