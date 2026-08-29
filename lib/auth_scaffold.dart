@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 
 class AuthScaffold extends StatelessWidget {
-  const AuthScaffold({super.key, required this.child});
-
   final Widget child;
+  final bool scrollable;
+
+  const AuthScaffold({
+    required this.child,
+    this.scrollable = true,
+    super.key,
+  });
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
-        body: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 500),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                  child: child,
-                ),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: scrollable
+            ? SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: child,
+              )
+            : Padding(
+                padding: const EdgeInsets.all(24),
+                child: child,
               ),
-            ),
-          ),
-        ),
-      );
+      ),
+    );
+  }
 }

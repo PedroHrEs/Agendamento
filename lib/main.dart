@@ -12,12 +12,12 @@ Future<void> main() async {
   try {
     await Firebase.initializeApp(
       options: const FirebaseOptions  (
-        apiKey: "AIzaSyBDSI3im2DYrV8yGOtv6Y7VXQdWqtosGUE",
-        authDomain: "dentagenda-76586.firebaseapp.com",
-        projectId: "dentagenda-76586",
-        storageBucket: "dentagenda-76586.firebasestorage.app",
-        messagingSenderId: "663660709789",
-        appId: "1:663660709789:web:c5ebe55a1d73687551d174"
+        apiKey: "AIzaSyBWo9zL1_i5mi2itCYsewKIWYx31X2mvg0",
+        authDomain: "dentagenda1-1569f.firebaseapp.com",
+        projectId: "dentagenda1-1569f",
+        storageBucket: "dentagenda1-1569f.firebasestorage.app",
+        messagingSenderId: "690070880478",
+        appId: "1:690070880478:web:3a37757af50de35d96424f"
       )
     );
     

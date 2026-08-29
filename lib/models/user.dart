@@ -41,7 +41,33 @@ class UserModel {
       'name': name.trim(),
       'phone': phone.replaceAll(RegExp(r'\D'), ''),
       'email': email.trim().toLowerCase(),
-      'password': password.trim().toLowerCase(),
+      'createdAt': createdAt == null
+          ? FieldValue.serverTimestamp()
+          : Timestamp.fromDate(createdAt!),
+      'updatedAt': updatedAt == null
+          ? FieldValue.serverTimestamp()
+          : Timestamp.fromDate(updatedAt!),
+    };
+  }
+
+  factory UserModel.fromMap(Map<String, dynamic> data, String uid) {
+    return UserModel(
+      uid: uid,
+      name: (data['name'] as String?) ?? '',
+      phone: (data['phone'] as String?) ?? '',
+      email: (data['email'] as String?) ?? '',
+      password: '',
+      createdAt: _dateTimeFromValue(data['createdAt']),
+      updatedAt: _dateTimeFromValue(data['updatedAt']),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'uid': uid,
+      'name': name.trim(),
+      'phone': phone.replaceAll(RegExp(r'\D'), ''),
+      'email': email.trim().toLowerCase(),
       'createdAt': createdAt == null
           ? FieldValue.serverTimestamp()
           : Timestamp.fromDate(createdAt!),
