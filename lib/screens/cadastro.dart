@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import '../auth_scaffold.dart';
 import '../models/user.dart';
 import '../services/user_services.dart';
+import '../widgets/app_header.dart';
 import 'dashboard.dart';
+import 'home_page.dart';
 import 'login.dart';
 import 'splash_screen.dart';
 
@@ -24,6 +26,24 @@ class _CadastroPageState extends State<CadastroPage> {
   final UserService _userService = UserService();
   bool _isLoading = false;
   String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _redirectIfLoggedIn();
+  }
+
+  void _redirectIfLoggedIn() {
+    if (FirebaseAuth.instance.currentUser == null) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => const DashboardScreen()),
+        (route) => false,
+      );
+    });
+  }
 
   @override
   void dispose() {
@@ -187,80 +207,109 @@ class _CadastroPageState extends State<CadastroPage> {
   }
 
   @override
-  Widget build(BuildContext context) => AuthScaffold(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Center(child: Image.asset('assets/images/denteagendalogo.png', width: 175)),
-    const SizedBox(height: 40),
-    const Text('Crie sua conta', style: TextStyle(color: Color(0xFF163B3A), fontSize: 28, fontWeight: FontWeight.bold)),
-    const SizedBox(height: 8),
-    const Text('Comece a organizar seus cuidados odontológicos.', style: TextStyle(color: Color(0xFF5E7776), fontSize: 16)),
-    const SizedBox(height: 30),
-    if (_errorMessage != null)
-      Padding(
-        padding: const EdgeInsets.only(bottom: 16),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: Colors.red.shade50,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.red.shade300, width: 1.5),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.error_outline, color: Colors.red.shade700, size: 20),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  _errorMessage!,
-                  style: TextStyle(
-                    color: Colors.red.shade700,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
+  Widget build(BuildContext context) {
+    return AuthScaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(84),
+        child: AppHeader(
+          onLogoTap: () {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute<void>(builder: (_) => const HomePage()),
+              (route) => false,
+            );
+          },
+          onUserActionTap: () {
+            final user = FirebaseAuth.instance.currentUser;
+            if (user == null) {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute<void>(builder: (_) => const LoginPage()),
+                (route) => false,
+              );
+              return;
+            }
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute<void>(builder: (_) => const DashboardScreen()),
+              (route) => false,
+            );
+          },
         ),
       ),
-    TextField(
-      controller: _nameController,
-      decoration: const InputDecoration(labelText: 'Nome completo', prefixIcon: Icon(Icons.person_outline)),
-    ),
-    const SizedBox(height: 16),
-    TextField(
-      controller: _emailController,
-      keyboardType: TextInputType.emailAddress,
-      decoration: const InputDecoration(labelText: 'E-mail', prefixIcon: Icon(Icons.email_outlined)),
-    ),
-    const SizedBox(height: 16),
-    TextField(
-      controller: _phoneController,
-      keyboardType: TextInputType.phone,
-      decoration: const InputDecoration(labelText: 'Telefone (opcional)', prefixIcon: Icon(Icons.phone_outlined)),
-    ),
-    const SizedBox(height: 16),
-    TextField(
-      controller: _passwordController,
-      obscureText: true,
-      decoration: const InputDecoration(labelText: 'Senha', prefixIcon: Icon(Icons.lock_outline)),
-    ),
-    const SizedBox(height: 16),
-    TextField(
-      controller: _confirmPasswordController,
-      obscureText: true,
-      decoration: const InputDecoration(labelText: 'Confirmar senha', prefixIcon: Icon(Icons.lock_outline)),
-    ),
-    const SizedBox(height: 32),
-    SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _register,
-        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF007A78), foregroundColor: Colors.white),
-        child: _isLoading ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text('CRIAR CONTA', style: TextStyle(fontWeight: FontWeight.bold)),
-      ),
-    ),
-    const SizedBox(height: 16),
-    Center(child: TextButton(onPressed: () => openWithSplash(context, const LoginPage()), child: const Text('Já tenho uma conta'))),
-  ]));
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Center(child: Image.asset('assets/images/denteagendalogo.png', width: 175)),
+        const SizedBox(height: 40),
+        const Text('Crie sua conta', style: TextStyle(color: Color(0xFF163B3A), fontSize: 28, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        const Text('Comece a organizar seus cuidados odontológicos.', style: TextStyle(color: Color(0xFF5E7776), fontSize: 16)),
+        const SizedBox(height: 30),
+        if (_errorMessage != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.red.shade300, width: 1.5),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.error_outline, color: Colors.red.shade700, size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _errorMessage!,
+                      style: TextStyle(
+                        color: Colors.red.shade700,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        TextField(
+          controller: _nameController,
+          decoration: const InputDecoration(labelText: 'Nome completo', prefixIcon: Icon(Icons.person_outline)),
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(labelText: 'E-mail', prefixIcon: Icon(Icons.email_outlined)),
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _phoneController,
+          keyboardType: TextInputType.phone,
+          decoration: const InputDecoration(labelText: 'Telefone (opcional)', prefixIcon: Icon(Icons.phone_outlined)),
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _passwordController,
+          obscureText: true,
+          decoration: const InputDecoration(labelText: 'Senha', prefixIcon: Icon(Icons.lock_outline)),
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _confirmPasswordController,
+          obscureText: true,
+          decoration: const InputDecoration(labelText: 'Confirmar senha', prefixIcon: Icon(Icons.lock_outline)),
+        ),
+        const SizedBox(height: 32),
+        SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: _isLoading ? null : _register,
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF007A78), foregroundColor: Colors.white),
+            child: _isLoading ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text('CRIAR CONTA', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Center(child: TextButton(onPressed: () => openWithSplash(context, const LoginPage()), child: const Text('Já tenho uma conta'))),
+      ]),
+    );
+  }
 }

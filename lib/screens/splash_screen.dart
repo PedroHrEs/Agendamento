@@ -27,8 +27,9 @@ class _SplashScreenState extends State<SplashScreen>
     await Future<void>.delayed(const Duration(milliseconds: 1600));
     if (!mounted) return;
     Navigator.of(context).pushReplacement(PageRouteBuilder<void>(
-      pageBuilder: (_, __, ___) => widget.destination,
-      transitionsBuilder: (_, animation, __, child) => FadeTransition(opacity: animation, child: child),
+      pageBuilder: (context, animation, secondaryAnimation) => widget.destination,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+          FadeTransition(opacity: animation, child: child),
       transitionDuration: const Duration(milliseconds: 350),
     ));
   }

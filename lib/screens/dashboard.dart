@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../models/user.dart';
 import '../services/user_services.dart';
+import '../widgets/app_header.dart';
+import 'home_page.dart';
 import 'login.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -53,13 +55,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Meu Perfil'),
-        backgroundColor: const Color(0xFF007A78),
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(onPressed: _logout, icon: const Icon(Icons.logout)),
-        ],
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(84),
+        child: AppHeader(
+          onLogoTap: () {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute<void>(builder: (_) => const HomePage()),
+              (route) => false,
+            );
+          },
+          onUserActionTap: () {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute<void>(builder: (_) => const LoginPage()),
+              (route) => false,
+            );
+          },
+        ),
       ),
       body: StreamBuilder<UserModel?>(
         stream: _userStream,
@@ -101,6 +112,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: _logout,
+                    icon: const Icon(Icons.logout),
+                    label: const Text('Sair'),
+                    style: TextButton.styleFrom(foregroundColor: Colors.red),
+                  ),
+                ),
+                const SizedBox(height: 12),
 
                 // Informações do Perfil
                 _buildProfileSection(
