@@ -6,6 +6,7 @@ import '../services/user_services.dart';
 import '../widgets/app_header.dart';
 import 'home_page.dart';
 import 'login.dart';
+import 'Agenda.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -136,6 +137,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ],
                 ),
                 const SizedBox(height: 24),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(builder: (_) => const AgendaPage()),
+                    ),
+                    icon: const Icon(Icons.calendar_month_outlined),
+                    label: const Text('Meus Agendamentos'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF007A78),
+                      side: const BorderSide(color: Color(0xFF007A78)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
 
                 // Botão para editar
                 SizedBox(

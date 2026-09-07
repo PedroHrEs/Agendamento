@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'cadastro.dart';
 import 'login.dart';
 import 'splash_screen.dart';
+import 'Agenda.dart';
 import '../widgets/app_header.dart';
 
 class HomePage extends StatelessWidget {
@@ -125,7 +126,31 @@ class HomePage extends StatelessWidget {
                       description: 'Receba avisos para não perder nenhum compromisso.',
                     ),
                     const SizedBox(height: 32),
-                    if (!isLogged) ...[
+                    if (isLogged) ...[
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: ElevatedButton.icon(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const AgendaPage(),
+                            ),
+                          ),
+                          icon: const Icon(Icons.calendar_month_rounded),
+                          label: const Text(
+                            'AGENDAR HORÁRIO',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
                       SizedBox(
                         width: double.infinity,
                         height: 56,
