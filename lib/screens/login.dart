@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
 
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute<void>(
-          builder: (_) => const DashboardScreen(),
+          builder: (_) => const HomePage(),
         ),
         (route) => false,
       );

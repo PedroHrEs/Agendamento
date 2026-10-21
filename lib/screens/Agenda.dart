@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../models/schedule.dart';
+import '../models/patient.dart';
+import '../services/patient_repository.dart';
 import '../services/schedule_repository.dart';
 
 class AgendaPage extends StatefulWidget {
@@ -13,7 +15,9 @@ class AgendaPage extends StatefulWidget {
 class _AgendaPageState extends State<AgendaPage> {
   static const _primary = Color(0xFF007A78);
   final ScheduleRepository _repository = ScheduleRepository();
+  final PatientRepository _patientRepository = PatientRepository();
   late final Stream<List<ScheduleModel>> _schedules;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -27,6 +31,7 @@ class _AgendaPageState extends State<AgendaPage> {
         : DateTime.tryParse(schedule.horario) ?? _nextAvailableDate();
     DateTime selectedDate = DateTime(current.year, current.month, current.day);
     int selectedHour = current.hour < 8 ? 8 : (current.hour > 18 ? 18 : current.hour);
+    PatientModel? selectedPatient;
     var saving = false;
 
     await showDialog<void>(
@@ -55,19 +60,75 @@ class _AgendaPageState extends State<AgendaPage> {
                   },
                 ),
                 const SizedBox(height: 12),
+                StreamBuilder<List<PatientModel>>(
+                  stream: _patientRepository.streamMyPatients(),
+                  builder: (context, patientSnapshot) {
+                    final patients = patientSnapshot.data ?? const <PatientModel>[];
+                    if (selectedPatient == null && schedule != null) {
+                      for (final patient in patients) {
+                        if (patient.id == schedule.patientId) selectedPatient = patient;
+                      }
+                    }
+                    return DropdownButtonFormField<String>(
+                      value: selectedPatient?.id,
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Paciente',
+                        prefixIcon: Icon(Icons.person_outline),
+                      ),
+                      hint: Text(patientSnapshot.hasData ? 'Selecione o paciente' : 'Carregando pacientes...'),
+                      items: patients.map((patient) => DropdownMenuItem<String>(
+                        value: patient.id,
+                        child: Text(patient.name, overflow: TextOverflow.ellipsis),
+                      )).toList(),
+                      onChanged: patients.isEmpty
+                          ? null
+                          : (patientId) {
+                              if (patientId == null) return;
+                              setDialogState(() {
+                                selectedPatient = patients.firstWhere(
+                                  (patient) => patient.id == patientId,
+                                );
+                              });
+                            },
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
                 const Text('Horário disponível (08:00 às 18:00)'),
                 const SizedBox(height: 10),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: List.generate(11, (index) {
-                    final hour = index + 8;
-                    return ChoiceChip(
-                      label: Text('${hour.toString().padLeft(2, '0')}:00'),
-                      selected: selectedHour == hour,
-                      onSelected: (_) => setDialogState(() => selectedHour = hour),
+                StreamBuilder<Set<int>>(
+                  stream: _repository.streamBookedHours(selectedDate),
+                  builder: (context, snapshot) {
+                    final bookedHours = snapshot.data ?? <int>{};
+                    return Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: List.generate(11, (index) {
+                        final hour = index + 8;
+                        final selectedDateTime = DateTime(
+                          selectedDate.year,
+                          selectedDate.month,
+                          selectedDate.day,
+                          hour,
+                        );
+                        final isCurrentSchedule = schedule != null &&
+                            schedule.uid.isNotEmpty &&
+                            DateTime.tryParse(schedule.horario) ==
+                                selectedDateTime;
+                        final isBooked =
+                            bookedHours.contains(hour) && !isCurrentSchedule;
+
+                        return ChoiceChip(
+                          label: Text('${hour.toString().padLeft(2, '0')}:00'),
+                          selected: selectedHour == hour,
+                          onSelected: isBooked || !snapshot.hasData
+                              ? null
+                              : (_) => setDialogState(() => selectedHour = hour),
+                        );
+                      }),
                     );
-                  }),
+                  },
                 ),
               ],
             ),
@@ -88,11 +149,25 @@ class _AgendaPageState extends State<AgendaPage> {
                         selectedDate.day,
                         selectedHour,
                       );
+                      if (selectedPatient == null) {
+                        setDialogState(() => saving = false);
+                        _showMessage('Selecione um paciente para o agendamento.');
+                        return;
+                      }
                       try {
                         if (schedule == null) {
-                          await _repository.create(dateTime: dateTime);
+                          await _repository.create(
+                            dateTime: dateTime,
+                            patientId: selectedPatient!.id,
+                            patientName: selectedPatient!.name,
+                          );
                         } else {
-                          await _repository.update(schedule: schedule, dateTime: dateTime);
+                          await _repository.update(
+                            schedule: schedule,
+                            dateTime: dateTime,
+                            patientId: selectedPatient!.id,
+                            patientName: selectedPatient!.name,
+                          );
                         }
                         if (!context.mounted) return;
                         Navigator.pop(dialogContext);
@@ -166,12 +241,30 @@ class _AgendaPageState extends State<AgendaPage> {
           if (schedules.isEmpty) {
             return const Center(child: Text('Você ainda não possui agendamentos.'));
           }
-          return ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
-            itemCount: schedules.length,
+          final query = _searchQuery.trim().toLowerCase();
+          final filteredSchedules = schedules.where((schedule) =>
+              schedule.patientName.toLowerCase().contains(query) ||
+              _formatDateTime(schedule.horario).toLowerCase().contains(query)).toList();
+          return Column(children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: TextField(
+                onChanged: (value) => setState(() => _searchQuery = value),
+                decoration: const InputDecoration(
+                  labelText: 'Pesquisar agendamento',
+                  prefixIcon: Icon(Icons.search),
+                ),
+              ),
+            ),
+            Expanded(
+              child: filteredSchedules.isEmpty
+                  ? const Center(child: Text('Nenhum agendamento encontrado.'))
+                  : ListView.separated(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+            itemCount: filteredSchedules.length,
             separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
-              final schedule = schedules[index];
+              final schedule = filteredSchedules[index];
               return Card(
                 child: ListTile(
                   leading: const CircleAvatar(
@@ -180,7 +273,9 @@ class _AgendaPageState extends State<AgendaPage> {
                     child: Icon(Icons.event_available_outlined),
                   ),
                   title: Text(_formatDateTime(schedule.horario)),
-                  subtitle: const Text('Consulta agendada'),
+                  subtitle: Text(schedule.patientName.isEmpty
+                      ? 'Paciente não informado'
+                      : 'Paciente: ${schedule.patientName}'),
                   trailing: PopupMenuButton<String>(
                     onSelected: (action) {
                       if (action == 'edit') _openScheduleDialog(schedule);
@@ -194,7 +289,9 @@ class _AgendaPageState extends State<AgendaPage> {
                 ),
               );
             },
-          );
+          ),
+            ),
+          ]);
         },
       ),
     );

@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 
 import '../models/user.dart';
 import '../services/user_services.dart';
+import '../utils/phone_formatter.dart';
 import '../widgets/app_header.dart';
 import 'home_page.dart';
 import 'login.dart';
 import 'Agenda.dart';
+import 'patients_page.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -131,7 +133,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     _buildProfileInfo(label: 'Nome', value: user.name),
                     const SizedBox(height: 12),
-                    _buildProfileInfo(label: 'Telefone', value: user.phone.isEmpty ? 'Não informado' : user.phone),
+                    _buildProfileInfo(label: 'Telefone', value: user.phone.isEmpty ? 'Não informado' : formatBrazilianPhone(user.phone)),
                     const SizedBox(height: 12),
                     _buildProfileInfo(label: 'E-mail', value: user.email),
                   ],
@@ -147,6 +149,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     icon: const Icon(Icons.calendar_month_outlined),
                     label: const Text('Meus Agendamentos'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF007A78),
+                      side: const BorderSide(color: Color(0xFF007A78)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(builder: (_) => const PatientsPage()),
+                    ),
+                    icon: const Icon(Icons.people_outline),
+                    label: const Text('Gerenciar Pacientes'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF007A78),
                       side: const BorderSide(color: Color(0xFF007A78)),
@@ -203,7 +222,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _showEditDialog(UserModel user) {
     final nameController = TextEditingController(text: user.name);
-    final phoneController = TextEditingController(text: user.phone);
+    final phoneController = TextEditingController(text: formatBrazilianPhone(user.phone));
     bool isLoading = false;
 
     showDialog(
@@ -223,6 +242,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 TextField(
                   controller: phoneController,
                   keyboardType: TextInputType.phone,
+                  inputFormatters: const [BrazilianPhoneInputFormatter()],
                   decoration: const InputDecoration(labelText: 'Telefone', prefixIcon: Icon(Icons.phone_outlined)),
                 ),
               ],

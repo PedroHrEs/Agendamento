@@ -5,6 +5,8 @@ class ScheduleModel {
     required this.uid,
     required this.horario,
     required this.userId,
+    required this.patientId,
+    required this.patientName,
     this.createdAt,
     this.updatedAt,
   });
@@ -12,6 +14,8 @@ class ScheduleModel {
   final String uid;
   final String horario;
   final String userId;
+  final String patientId;
+  final String patientName;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -24,6 +28,8 @@ class ScheduleModel {
       uid: (data['uid'] as String?) ?? snapshot.id,
       horario: (data['horario'] as String?) ?? '',
       userId: (data['userId'] as String?) ?? '',
+      patientId: (data['patientId'] as String?) ?? '',
+      patientName: (data['patientName'] as String?) ?? '',
       createdAt: _dateTimeFromValue(data['createdAt']),
       updatedAt: _dateTimeFromValue(data['updatedAt']),
     );
@@ -34,6 +40,8 @@ class ScheduleModel {
       'uid': uid,
       'horario': horario.trim(),
       'userId': userId.trim(),
+      'patientId': patientId.trim(),
+      'patientName': patientName.trim(),
       'createdAt': createdAt == null
           ? FieldValue.serverTimestamp()
           : Timestamp.fromDate(createdAt!),
@@ -48,6 +56,8 @@ class ScheduleModel {
       uid: uid,
       horario: (data['horario'] as String?) ?? '',
       userId: (data['userId'] as String?) ?? '',
+      patientId: (data['patientId'] as String?) ?? '',
+      patientName: (data['patientName'] as String?) ?? '',
       createdAt: _dateTimeFromValue(data['createdAt']),
       updatedAt: _dateTimeFromValue(data['updatedAt']),
     );
@@ -58,6 +68,8 @@ class ScheduleModel {
       'uid': uid,
       'horario': horario.trim(),
       'userId': userId.trim(),
+      'patientId': patientId.trim(),
+      'patientName': patientName.trim(),
       'createdAt': createdAt == null
           ? FieldValue.serverTimestamp()
           : Timestamp.fromDate(createdAt!),
@@ -71,6 +83,8 @@ class ScheduleModel {
     String? uid,
     String? horario,
     String? userId,
+    String? patientId,
+    String? patientName,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -78,6 +92,8 @@ class ScheduleModel {
       uid: uid ?? this.uid,
       horario: horario ?? this.horario,
       userId: userId ?? this.userId,
+      patientId: patientId ?? this.patientId,
+      patientName: patientName ?? this.patientName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

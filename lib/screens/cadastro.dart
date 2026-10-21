@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../auth_scaffold.dart';
 import '../models/user.dart';
 import '../services/user_services.dart';
+import '../utils/phone_formatter.dart';
 import '../widgets/app_header.dart';
 import 'dashboard.dart';
 import 'home_page.dart';
@@ -137,7 +138,7 @@ class _CadastroPageState extends State<CadastroPage> {
 
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute<void>(
-          builder: (_) => const DashboardScreen(),
+          builder: (_) => const HomePage(),
         ),
         (route) => false,
       );
@@ -283,6 +284,7 @@ class _CadastroPageState extends State<CadastroPage> {
         TextField(
           controller: _phoneController,
           keyboardType: TextInputType.phone,
+          inputFormatters: const [BrazilianPhoneInputFormatter()],
           decoration: const InputDecoration(labelText: 'Telefone (opcional)', prefixIcon: Icon(Icons.phone_outlined)),
         ),
         const SizedBox(height: 16),

@@ -34,6 +34,21 @@ class ScheduleService {
     });
   }
 
+  /// Retorna os horários já reservados em uma data, por todos os usuários.
+  Stream<Set<int>> streamBookedHours(DateTime date) {
+    final start = DateTime(date.year, date.month, date.day);
+    final end = start.add(const Duration(days: 1));
+
+    return _schedules
+        .where('horario', isGreaterThanOrEqualTo: start.toIso8601String())
+        .where('horario', isLessThan: end.toIso8601String())
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((document) => DateTime.tryParse(document.data().horario)?.hour)
+            .whereType<int>()
+            .toSet());
+  }
+
   /// O ID calculado garante que apenas um usuário reserve cada horário.
   Future<void> createSchedule(ScheduleModel schedule) async {
     final userId = _currentUserId;
@@ -69,6 +84,8 @@ class ScheduleService {
       } else {
         transaction.update(oldReference, {
           'horario': schedule.horario,
+          'patientId': schedule.patientId,
+          'patientName': schedule.patientName,
           'updatedAt': FieldValue.serverTimestamp(),
         });
       }

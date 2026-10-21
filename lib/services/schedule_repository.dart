@@ -14,16 +14,38 @@ class ScheduleRepository {
 
   Stream<List<ScheduleModel>> streamMySchedules() => _service.streamMySchedules();
 
-  Future<void> create({required DateTime dateTime}) async {
+  Stream<Set<int>> streamBookedHours(DateTime date) =>
+      _service.streamBookedHours(date);
+
+  Future<void> create({
+    required DateTime dateTime,
+    required String patientId,
+    required String patientName,
+  }) async {
     final userId = _requireUserId();
     await _service.createSchedule(
-      ScheduleModel(uid: '', horario: dateTime.toIso8601String(), userId: userId),
+      ScheduleModel(
+        uid: '',
+        horario: dateTime.toIso8601String(),
+        userId: userId,
+        patientId: patientId,
+        patientName: patientName,
+      ),
     );
   }
 
-  Future<void> update({required ScheduleModel schedule, required DateTime dateTime}) {
+  Future<void> update({
+    required ScheduleModel schedule,
+    required DateTime dateTime,
+    required String patientId,
+    required String patientName,
+  }) {
     return _service.updateSchedule(
-      schedule.copyWith(horario: dateTime.toIso8601String()),
+      schedule.copyWith(
+        horario: dateTime.toIso8601String(),
+        patientId: patientId,
+        patientName: patientName,
+      ),
     );
   }
 
