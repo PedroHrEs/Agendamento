@@ -7,6 +7,8 @@ import 'splash_screen.dart';
 import 'Agenda.dart';
 import 'dashboard.dart';
 import 'patients_page.dart';
+import 'consultations_page.dart';
+import 'dentists_jsonbin_page.dart';
 import '../widgets/app_header.dart';
 
 class HomePage extends StatelessWidget {
@@ -116,6 +118,42 @@ class HomePage extends StatelessWidget {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: OutlinedButton.icon(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const ConsultationsPage(),
+                            ),
+                          ),
+                          icon: const Icon(Icons.medical_services_outlined),
+                          label: const Text('GERENCIAR CONSULTAS'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: primary,
+                            side: const BorderSide(color: primary),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: OutlinedButton.icon(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const DentistsJsonBinPage(),
+                            ),
+                          ),
+                          icon: const Icon(Icons.people_alt_outlined),
+                          label: const Text('GERENCIAR DENTISTAS'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: primary,
+                            side: const BorderSide(color: primary),
+                          ),
+                        ),
+                      ),
                     ] else ...[
                       SizedBox(
                         width: double.infinity,
@@ -152,6 +190,24 @@ class HomePage extends StatelessWidget {
                               color: primary,
                               fontWeight: FontWeight.w600,
                             ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: OutlinedButton.icon(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const DentistsJsonBinPage(),
+                            ),
+                          ),
+                          icon: const Icon(Icons.people_alt_outlined),
+                          label: const Text('GERENCIAR DENTISTAS'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: primary,
+                            side: const BorderSide(color: primary),
                           ),
                         ),
                       ),

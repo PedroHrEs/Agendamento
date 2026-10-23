@@ -9,6 +9,7 @@ import 'home_page.dart';
 import 'login.dart';
 import 'Agenda.dart';
 import 'patients_page.dart';
+import 'consultations_page.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -166,6 +167,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     icon: const Icon(Icons.people_outline),
                     label: const Text('Gerenciar Pacientes'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF007A78),
+                      side: const BorderSide(color: Color(0xFF007A78)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(builder: (_) => const ConsultationsPage()),
+                    ),
+                    icon: const Icon(Icons.medical_services_outlined),
+                    label: const Text('Gerenciar Consultas'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF007A78),
                       side: const BorderSide(color: Color(0xFF007A78)),
