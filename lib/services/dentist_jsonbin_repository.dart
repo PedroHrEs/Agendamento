@@ -20,9 +20,9 @@ class DentistJsonBinRepository {
       };
 
   Future<List<DentistModel>> getAll() async {
-    final response = await _client.get(_uri.replace(path: '${_uri.path}/latest'), headers: _headers);
-    _check(response);
-    final root = jsonDecode(response.body) as Map<String, dynamic>;
+    final readResponse = await _client.get(_uri.replace(path: '${_uri.path}/latest'), headers: _headers);
+    _check(readResponse);
+    final root = jsonDecode(readResponse.body) as Map<String, dynamic>;
     final record = root['record'] as Map<String, dynamic>? ?? root;
     final list = record['dentistas'] as List<dynamic>? ?? const [];
     return list.map((item) => DentistModel.fromJson(item as Map<String, dynamic>)).toList();
@@ -57,8 +57,13 @@ class DentistJsonBinRepository {
   }
 
   Future<void> _save(List<DentistModel> dentists) async {
+    final readResponse = await _client.get(_uri.replace(path: '${_uri.path}/latest'), headers: _headers);
+    _check(readResponse);
+    final root = jsonDecode(readResponse.body) as Map<String, dynamic>;
+    final record = Map<String, dynamic>.from(root['record'] as Map<String, dynamic>? ?? root);
+    record['dentistas'] = dentists.map((item) => item.toJson()).toList();
     final response = await _client.put(_uri,
-        headers: _headers, body: jsonEncode({'dentistas': dentists.map((item) => item.toJson()).toList()}));
+        headers: _headers, body: jsonEncode(record));
     _check(response);
   }
 

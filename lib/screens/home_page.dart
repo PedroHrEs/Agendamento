@@ -9,6 +9,7 @@ import 'dashboard.dart';
 import 'patients_page.dart';
 import 'consultations_page.dart';
 import 'dentists_jsonbin_page.dart';
+import 'products_jsonbin_page.dart';
 import '../widgets/app_header.dart';
 
 class HomePage extends StatelessWidget {
@@ -154,6 +155,24 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: OutlinedButton.icon(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const ProductsJsonBinPage(),
+                            ),
+                          ),
+                          icon: const Icon(Icons.inventory_2_outlined),
+                          label: const Text('GERENCIAR PRODUTOS'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: primary,
+                            side: const BorderSide(color: primary),
+                          ),
+                        ),
+                      ),
                     ] else ...[
                       SizedBox(
                         width: double.infinity,
@@ -205,6 +224,24 @@ class HomePage extends StatelessWidget {
                           ),
                           icon: const Icon(Icons.people_alt_outlined),
                           label: const Text('GERENCIAR DENTISTAS'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: primary,
+                            side: const BorderSide(color: primary),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: OutlinedButton.icon(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const ProductsJsonBinPage(),
+                            ),
+                          ),
+                          icon: const Icon(Icons.inventory_2_outlined),
+                          label: const Text('GERENCIAR PRODUTOS'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: primary,
                             side: const BorderSide(color: primary),
