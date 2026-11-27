@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/cart_item.dart';
 import '../services/cart_jsonbin_repository.dart';
 import '../utils/currency_formatter.dart';
+import 'shipping_checkout_page.dart';
 
 class ProductCartPage extends StatefulWidget {
   const ProductCartPage({
@@ -94,12 +95,22 @@ class _ProductCartPageState extends State<ProductCartPage> {
   Future<void> _finishPurchase() async {
     if (_items.isEmpty || _isSaving) return;
 
-    final completedTotal = _total;
     setState(() => _isSaving = true);
     try {
-      final emptyCart = await widget.repository.clear();
-      _applyItems(emptyCart);
-      if (!mounted) return;
+      var completedTotal = _total;
+      final orderPlaced = await Navigator.of(context).push<bool>(
+        MaterialPageRoute<bool>(
+          builder: (_) => ShippingCheckoutPage(
+            items: List<CartItem>.unmodifiable(_items),
+            onOrderPlaced: (shippingPrice) async {
+              completedTotal += shippingPrice;
+              final emptyCart = await widget.repository.clear();
+              _applyItems(emptyCart);
+            },
+          ),
+        ),
+      );
+      if (orderPlaced != true || !mounted) return;
 
       await showDialog<void>(
         context: context,
